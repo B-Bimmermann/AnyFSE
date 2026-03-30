@@ -25,6 +25,7 @@
     <MakeAppxExe>$(WindowsSdkToolsPath)\MakeAppx.exe</MakeAppxExe>
     <MakePriExe>$(WindowsSdkToolsPath)\MakePri.exe</MakePriExe>
     <SignToolExe>$(WindowsSdkToolsPath)\signtool.exe</SignToolExe>
+    <PackageCertificateThumbprint>53000C5A82C001B0DB7D8B3D83739F5F190097E3</PackageCertificateThumbprint>
     <CertificateName>Artem Shpynov</CertificateName>
   </PropertyGroup>
   <!-- <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -140,8 +141,8 @@
     <Message Text="APPX package created: $(PackageFileName)" Importance="high" />
   </Target>
 
-  <!-- Target: Get certificate thumbprint by name -->
-  <Target Name="GetCertificateThumbprint">
+  <!-- Target: Get certificate thumbprint by name (skipped if CertificateThumbprint is passed via /p:) -->
+  <Target Name="GetCertificateThumbprint" Condition="'$(CertificateThumbprint)' == ''">
     <Message Text="Finding certificate for: $(CertificateName)" Importance="high" />
 
     <Exec Command="powershell -NoProfile -Command &quot;try { $cert = Get-ChildItem -Path 'Cert:\CurrentUser\My' | Where-Object { $_.Subject -like '*$(PublisherCN)*' } | Select-Object -First 1; if (-not $cert) { throw 'Certificate not found' }; $cert.Thumbprint } catch { Write-Error $_.Exception.Message; exit 1 }&quot;" ContinueOnError="false" ConsoleToMSBuild="true">

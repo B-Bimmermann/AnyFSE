@@ -1,0 +1,101 @@
+name: Build AnyFSE
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PLATFORM: x64
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build AnyFSE.exe
+        run: msbuild AnyFSE.vcxproj /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ env.PLATFORM }} /m
+
+      - name: Build AnyFSE.Settings.dll
+        run: msbuild AnyFSE.Settings.vcxproj /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ env.PLATFORM }} /m
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyFSE-${{ matrix.configuration }}
+          path: |
+            build/${{ matrix.configuration }}/AnyFSE.exe
+            build/${{ matrix.configuration }}/AnyFSE.Settings.dll
+
+  package:
+    runs-on: windows-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build AnyFSE.exe (Release)
+        run: msbuild AnyFSE.vcxproj /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} /m
+
+      - name: Build AnyFSE.Settings.dll (Release)
+        run: msbuild AnyFSE.Settings.vcxproj /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} /m
+
+      - name: Import signing certificate
+        env:
+          SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          $pfxBytes = [Convert]::FromBase64String($env:SIGNING_CERTIFICATE)
+          $pfxPath = "${{ runner.temp }}\AnyFSE-signing.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, $pfxBytes)
+          Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\CurrentUser\My -Password (ConvertTo-SecureString -String $env:SIGNING_CERTIFICATE_PASSWORD -Force -AsPlainText)
+          Remove-Item $pfxPath
+        shell: pwsh
+
+      - name: Resolve Windows SDK path and certificate thumbprint
+        id: env
+        run: |
+          $sdkDir = "${env:ProgramFiles(x86)}\Windows Kits\10\"
+          echo "SDK_DIR=$sdkDir" >> $env:GITHUB_OUTPUT
+          $cert = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -like '*DDCC7751*' } | Select-Object -First 1
+          echo "CERT_THUMBPRINT=$($cert.Thumbprint)" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Create APPX Package (with signing)
+        run: msbuild AnyFSE.Package.vcxproj /t:Package /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} "/p:WindowsSdkDir=${{ steps.env.outputs.SDK_DIR }}" /p:CertificateThumbprint=${{ steps.env.outputs.CERT_THUMBPRINT }}
+
+      - name: Build Installer
+        run: msbuild AnyFSE.Installer.vcxproj /p:Configuration=Release /p:Platform=${{ env.PLATFORM }}
+
+      - name: Upload APPX package
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyFSE-Package
+          path: |
+            build/Release/AnyFSE-*.appx
+            build/Release/*.cer
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyFSE-Installer
+          path: |
+            build/Release/AnyFSE.Installer.exe
+            build/Release/AnyFSE.*.zip

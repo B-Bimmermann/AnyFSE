@@ -281,7 +281,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
     void LauncherPage::OnSmartDockedChanged()
     {
         bool enabled = m_smartDockedToggle.GetCheck();
-        m_pSmartDockedLine->SetState(enabled ? SettingsLine::Open : SettingsLine::Closed);
+        m_pSmartDockedLine->SetState(enabled ? SettingsLine::Opened : SettingsLine::Closed);
         m_dialog.UpdateLayout();
     }
 

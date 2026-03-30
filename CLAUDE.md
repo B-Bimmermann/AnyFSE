@@ -29,6 +29,57 @@ msbuild AnyFSE.Installer.vcxproj -property:Configuration=Release -property:Platf
 
 VS Code: `Ctrl+Shift+B` offers preconfigured tasks ("Build AnyFSE Debug", "Package", etc.).
 
+### CI / GitHub Actions
+
+`.github/workflows/build.yml` runs on every push/PR to `main`:
+
+- **build** job: Compiles `AnyFSE.exe` + `AnyFSE.Settings.dll` for Debug and Release (parallel matrix).
+- **package** job (main only): Builds Release, imports signing certificate from GitHub Secrets, creates signed APPX, builds Installer. Uploads APPX + Installer as artifacts.
+
+**Secrets required for packaging:**
+- `SIGNING_CERTIFICATE` — Base64-encoded PFX with private key (CN=`DDCC7751-898D-4BC9-B80C-4AA73E5D5762`)
+- `SIGNING_CERTIFICATE_PASSWORD` — PFX password
+
+**CI notes:**
+- Individual `.vcxproj` files are built (not the solution) to avoid Package/Installer running prematurely.
+- `WindowsSdkDir` and `CertificateThumbprint` are passed explicitly because `AnyFSE.Package.vcxproj` doesn't import standard C++ props.
+- `GetCertificateThumbprint` target in Package.vcxproj is conditional — skipped when thumbprint is passed via `/p:CertificateThumbprint`.
+
+### Setting Up the Signing Certificate
+
+To set up APPX signing on a new machine or fork, create a self-signed certificate and configure GitHub Secrets:
+
+```powershell
+# 1. Create a code signing certificate (must match Publisher CN in AnyFSE.Version.props)
+$cert = New-SelfSignedCertificate `
+    -Type Custom `
+    -Subject "CN=DDCC7751-898D-4BC9-B80C-4AA73E5D5762" `
+    -FriendlyName "AnyFSE Code Signing" `
+    -KeyUsage DigitalSignature `
+    -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3") `
+    -CertStoreLocation "Cert:\CurrentUser\My" `
+    -NotAfter (Get-Date).AddYears(5)
+
+# 2. Export PFX (with private key) for CI
+$password = ConvertTo-SecureString -String "YOUR_PASSWORD" -Force -AsPlainText
+Export-PfxCertificate -Cert $cert -FilePath "AnyFSE-signing.pfx" -Password $password
+
+# 3. Export CER (public key only) to replace Artem Shpynov.cer in the repo
+Export-Certificate -Cert $cert -FilePath "Artem Shpynov.cer"
+
+# 4. Upload secrets to GitHub (requires gh CLI)
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("AnyFSE-signing.pfx")) | gh secret set SIGNING_CERTIFICATE
+echo "YOUR_PASSWORD" | gh secret set SIGNING_CERTIFICATE_PASSWORD
+
+# 5. Update thumbprint in AnyFSE.Package.vcxproj (PackageCertificateThumbprint)
+Write-Host "New thumbprint: $($cert.Thumbprint)"
+
+# 6. Clean up PFX file (do not commit it!)
+Remove-Item "AnyFSE-signing.pfx"
+```
+
+The certificate stays in `Cert:\CurrentUser\My` for local package builds. The `GetCertificateThumbprint` MSBuild target auto-discovers it by CN. Users installing the APPX need the `.cer` in their Trusted Root store — the Installer handles this automatically.
+
 ### Version Management
 
 Version is defined in `AnyFSE.Version.props` (`AssemblyVersion`, currently 0.90.6). `VersionRevision` auto-increments on each package build. All projects import this file for shared version info injected via preprocessor defines.
