@@ -27,6 +27,8 @@ namespace AnyFSE::App::AppSettings::Settings::Page
             , m_browseButton(m_theme)
             , m_fseOnStartupToggle(m_theme)
             , m_customSettingsToggle(m_theme)
+            , m_smartDockedToggle(m_theme)
+            , m_smartDockedThresholdCombo(m_theme)
             , m_additionalArgumentsEdit(m_theme)
             , m_processNameEdit(m_theme)
             , m_titleEdit(m_theme)
@@ -64,6 +66,8 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         ComboBox m_launcherCombo;
         Button m_browseButton;
         Toggle m_fseOnStartupToggle;
+        Toggle m_smartDockedToggle;
+        ComboBox m_smartDockedThresholdCombo;
         Toggle m_customSettingsToggle;
         Button m_customResetButton;
 
@@ -77,6 +81,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
 
         SettingsLine * m_pBrowseLine = nullptr;
         SettingsLine * m_pFseOnStartupLine = nullptr;
+        SettingsLine * m_pSmartDockedLine = nullptr;
         SettingsLine * m_pCustomSettingsLine = nullptr;
         SettingsLine * m_pStartupSettingsLine = nullptr;
         SettingsLine * m_pSplashSettingsLine = nullptr;
@@ -89,6 +94,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         void AddCustomPage();
 
         void OnBrowseLauncher();
+        void OnSmartDockedChanged();
         void OnCustomChanged();
         void OnCustomReset();
         void UpdateCustomResetEnabled();

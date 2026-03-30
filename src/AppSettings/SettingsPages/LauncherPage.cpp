@@ -38,6 +38,33 @@ namespace AnyFSE::App::AppSettings::Settings::Page
             m_fseOnStartupToggle,
             Layout::LineHeight, Layout::LinePadding, 0);
 
+        m_pSmartDockedLine = &m_dialog.AddSettingsLine(settingPageList, top,
+            L"Smart Docked Mode",
+            L"Exit FSE automatically when an external display is detected",
+            m_smartDockedToggle,
+            Layout::LineHeight, 0, 0);
+
+        m_pSmartDockedLine->AddGroupItem(&m_dialog.AddSettingsLine(settingPageList, top,
+            L"Screen size threshold",
+            L"Screens wider than this are considered external displays",
+            m_smartDockedThresholdCombo,
+            Layout::LineHeightSmall, Layout::LinePadding, Layout::LineSmallMargin,
+            Layout::LauncherComboWidth));
+
+        m_smartDockedToggle.OnChanged += delegate(OnSmartDockedChanged);
+        m_pSmartDockedLine->OnChanged += delegate(m_dialog.UpdateLayout);
+
+        // Threshold presets: screen widths in mm. Multi-monitor always triggers
+        // regardless of threshold. Typical handheld screen widths:
+        //   7"  ~155mm (Steam Deck, ROG Xbox Ally X, MSI Claw)
+        //   8"  ~177mm (Legion Go S)
+        //   9"  ~195mm (Legion Go 8.8")
+        m_smartDockedThresholdCombo.AddItem(L"7\x2033 (ROG Xbox Ally X, Steam Deck)",  L"", L"170");
+        m_smartDockedThresholdCombo.AddItem(L"8\x2033 (Legion Go S)",                  L"", L"190");
+        m_smartDockedThresholdCombo.AddItem(L"9\x2033 (Legion Go, large handheld)",    L"", L"210");
+        m_smartDockedThresholdCombo.AddItem(L"10\x2033 (tablet / small display)",      L"", L"250");
+        m_smartDockedThresholdCombo.AddItem(L"13\x2033 (laptop)",                      L"", L"290");
+
         m_pCustomSettingsLine = &m_dialog.AddSettingsLine(settingPageList, top,
             L"Use custom settings",
             L"Change monitoring and startups settings for selected home application",
@@ -186,6 +213,17 @@ namespace AnyFSE::App::AppSettings::Settings::Page
 
         m_isAggressive = Config::AggressiveMode && m_config.Type != LauncherType::Native;
 
+        m_smartDockedToggle.SetCheck(Config::SmartDockedMode);
+        OnSmartDockedChanged();
+
+        // Map saved threshold (mm) back to closest combo entry
+        int threshold = Config::SmartDockedThresholdMm;
+        if      (threshold <= 170) m_smartDockedThresholdCombo.SelectItem(0); // 7"
+        else if (threshold <= 190) m_smartDockedThresholdCombo.SelectItem(1); // 8"
+        else if (threshold <= 210) m_smartDockedThresholdCombo.SelectItem(2); // 9"
+        else if (threshold <= 250) m_smartDockedThresholdCombo.SelectItem(3); // 10"
+        else                       m_smartDockedThresholdCombo.SelectItem(4); // 13"
+
         m_dialog.UpdateLayout();
         UpdateControls();
         UpdateCustomSettings();
@@ -230,8 +268,22 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         Config::Launcher.ClassName = m_classEdit.GetText();
         Config::Launcher.ClassNameAlt = m_classAltEdit.GetText();
         Config::Launcher.IconFile = m_config.IconFile;
+
+        Config::SmartDockedMode = m_smartDockedToggle.GetCheck();
+        std::wstring thresholdVal = m_smartDockedThresholdCombo.GetCurentValue();
+        if (!thresholdVal.empty())
+        {
+            Config::SmartDockedThresholdMm = std::stoi(thresholdVal);
+        }
     }
 
+
+    void LauncherPage::OnSmartDockedChanged()
+    {
+        bool enabled = m_smartDockedToggle.GetCheck();
+        m_pSmartDockedLine->SetState(enabled ? SettingsLine::Open : SettingsLine::Closed);
+        m_dialog.UpdateLayout();
+    }
 
     void LauncherPage::OnBrowseLauncher()
     {

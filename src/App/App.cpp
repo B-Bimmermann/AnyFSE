@@ -165,7 +165,7 @@ namespace AnyFSE::App
             }
         }
 
-        // or Launcher == None or Launcher == Xbox
+        // or Launcher == None or Launcher == Native
         if (Config::Launcher.Type == LauncherType::None
          || Config::Launcher.Type == LauncherType::Native)
         {
@@ -265,6 +265,27 @@ namespace AnyFSE::App
         if (AsSettings(lpCmdLine))
         {
             return ShowSettings();
+        }
+
+        // Smart Docked Mode: skip launcher and exit FSE when the device appears
+        // to be docked. Detection uses two heuristics:
+        //   1. Multiple monitors attached (external display via dock/hub)
+        //   2. Primary screen physically wider than threshold (single external monitor,
+        //      e.g. handheld lid closed). HORZSIZE returns mm from EDID data.
+        if (Config::SmartDockedMode && GamingExperience::IsFullscreenMode())
+        {
+            int monitors = GetSystemMetrics(SM_CMONITORS);
+            HDC hdc = GetDC(NULL);
+            int horzMm = GetDeviceCaps(hdc, HORZSIZE);
+            ReleaseDC(NULL, hdc);
+
+            if (monitors > 1 || horzMm > Config::SmartDockedThresholdMm)
+            {
+                log.Info("Smart Docked Mode: monitors=%d, screenWidth=%dmm (threshold=%dmm). Exiting FSE.",
+                         monitors, horzMm, Config::SmartDockedThresholdMm);
+                GamingExperience::ExitFSEMode();
+                return 0;
+            }
         }
 
         if (Launchers::IsLauncherActive())

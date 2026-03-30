@@ -167,6 +167,9 @@ namespace AnyFSE::Configuration
 
             static bool ExitFSEOnHomeExit;
 
+            static bool SmartDockedMode;       // Exit FSE when docked (multi-monitor or large screen)
+            static int  SmartDockedThresholdMm; // Primary screen width above which device is "docked"
+
             static bool         UpdatePreRelease;
             static bool         UpdateNotifications;
             static int          UpdateCheckInterval;

@@ -74,6 +74,8 @@ namespace AnyFSE::Configuration
     DWORD           Config::RestartDelay = 1000;
     std::list<StartupApp> Config::StartupApps;
     bool            Config::ExitFSEOnHomeExit = false;
+    bool            Config::SmartDockedMode = false;
+    int             Config::SmartDockedThresholdMm = 250;
 
     int             Config::UpdateCheckInterval = -2;
     std::wstring    Config::UpdateLastCheck;
@@ -141,6 +143,8 @@ namespace AnyFSE::Configuration
         SplashVideoPause        = config.value(jp("/Splash/Video/Pause"),    true);
         StartupApps             = config.value(jp("/StartupApps"),           std::list<StartupApp>());
         ExitFSEOnHomeExit       = config.value(jp("/Extra/ExitFSEOnHomeExit"), false);
+        SmartDockedMode         = config.value(jp("/Extra/SmartDockedMode"),  false);
+        SmartDockedThresholdMm  = config.value(jp("/Extra/SmartDockedThresholdMm"), 250);
 
         UpdatePreRelease        = config.value(jp("/Update/PreRelease"),     false);
         UpdateNotifications     = config.value(jp("/Update/Notifications"),  true);
@@ -234,7 +238,9 @@ namespace AnyFSE::Configuration
         config["AggressiveMode"]                = AggressiveMode;
         config["StartupApps"]                   = StartupApps;
 
-        config["Extra"]["ExitFSEOnHomeExit"]    = ExitFSEOnHomeExit;
+        config["Extra"]["ExitFSEOnHomeExit"]     = ExitFSEOnHomeExit;
+        config["Extra"]["SmartDockedMode"]       = SmartDockedMode;
+        config["Extra"]["SmartDockedThresholdMm"]= SmartDockedThresholdMm;
 
         config["Update"]["PreRelease"]          = UpdatePreRelease;
         config["Update"]["Notifications"]       = UpdateNotifications;
