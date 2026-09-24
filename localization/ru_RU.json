@@ -80,6 +80,8 @@
   "settingsEnterFseOnStartup": "Входить в режим Xbox при запуске",
   "settingsLeaveFseOnHomeExit": "Выходить из режима Xbox при закрытии домашнего приложения",
   "settingsLeaveFseOnHomeExitDescription": "Выходить из режима Xbox после закрытия домашнего приложения",
+  "settingsLeaveFseWhenDocked": "Выходить из режима Xbox при подключении к док-станции",
+  "settingsLeaveFseWhenDockedDescription": "Переключаться на рабочий стол при запуске, если подключён внешний дисплей",
   "settingsUseCustomSettings": "Использовать пользовательские настройки",
   "settingsUseCustomSettingsDescription": "Изменить параметры и обнаружение запуска домашнего приложения",
   "settingsSplashScreenSettings": "Заставка",

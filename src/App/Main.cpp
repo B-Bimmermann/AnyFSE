@@ -86,6 +86,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return exitCode;
     }
 
+    if (App::IsFirstLaunch() && ExitFSE::ExitWhenDocked())
+    {
+        return 0;
+    }
+
     bool isRestarting = !App::IsFirstLaunch() && App::IsRestarted();
 
     if (GamingExperience::IsFullscreenMode() && App::IsFirstLaunch())

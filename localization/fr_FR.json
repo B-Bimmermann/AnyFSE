@@ -80,6 +80,8 @@
   "settingsEnterFseOnStartup": "Entrer en mode Xbox au démarrage",
   "settingsLeaveFseOnHomeExit": "Quitter le mode Xbox a la fermeture de l'application",
   "settingsLeaveFseOnHomeExitDescription": "Quitter le mode jeu à la fermeture de l'application",
+  "settingsLeaveFseWhenDocked": "Quitter le mode Xbox sur station d'accueil",
+  "settingsLeaveFseWhenDockedDescription": "Passer au bureau au démarrage si un écran externe est connecté",
   "settingsUseCustomSettings": "Utiliser des paramètres personnalisés",
   "settingsUseCustomSettingsDescription": "Modifier détection et démarrage pour l'app choisie",
   "settingsSplashScreenSettings": "Paramètres d'écran de démarrage",

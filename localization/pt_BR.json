@@ -83,6 +83,8 @@
   "settingsEnterFseOnStartup": "Entrar no modo Xbox ao iniciar",
   "settingsLeaveFseOnHomeExit": "Sair do modo Xbox ao fechar o aplicativo inicial",
   "settingsLeaveFseOnHomeExitDescription": "Sair do modo Xbox depois que o aplicativo inicial for fechado",
+  "settingsLeaveFseWhenDocked": "Sair do modo Xbox quando conectado a uma estação de encaixe",
+  "settingsLeaveFseWhenDockedDescription": "Mudar para a área de trabalho ao iniciar se uma tela externa estiver conectada",
   "settingsUseCustomSettings": "Usar configurações personalizadas",
   "settingsUseCustomSettingsDescription": "Alterar as configurações e a detecção de inicialização do aplicativo inicial",
   "settingsSplashScreenSettings": "Tela de abertura",

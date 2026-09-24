@@ -80,6 +80,8 @@
   "settingsEnterFseOnStartup": "Avvia l'esperienza a schermo intero all'avvio del PC",
   "settingsLeaveFseOnHomeExit": "Esci dall'esperienza a schermo intero alla chiusura dell'app principale",
   "settingsLeaveFseOnHomeExitDescription": "Esci dall'esperienza a schermo intero dopo aver chiuso l'app principale",
+  "settingsLeaveFseWhenDocked": "Esci dall'esperienza a schermo intero quando collegato a un dock",
+  "settingsLeaveFseWhenDockedDescription": "Passa al desktop all'avvio se è collegato un display esterno",
   "settingsUseCustomSettings": "Usa impostazioni personalizzate",
   "settingsUseCustomSettingsDescription": "Modifica le impostazioni di monitoraggio e avvio per l'applicazione principale selezionata",
   "settingsSplashScreenSettings": "Impostazioni della schermata di avvio",
