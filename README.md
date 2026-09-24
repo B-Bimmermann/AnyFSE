@@ -56,6 +56,7 @@ The settings interface supports the following languages:
 
 - English
 - French (Français)
+- German (Deutsch)
 - Italian (Italiano)
 - Portuguese (Português Brazil)
 - Russian (Русский)
