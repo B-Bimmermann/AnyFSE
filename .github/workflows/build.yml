@@ -1,0 +1,109 @@
+name: Build AnyFSE
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PLATFORM: x64
+  WINDOWS_SDK_VERSION: 10.0.26100.0
+  # Normally set by the Visual Studio developer shell. The projects resolve signtool.exe, MakeAppx.exe and MakePri.exe
+  # from it before the C++ props are imported, and AnyFSE.Package.vcxproj does not import them at all.
+  WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+  # Package signing CN (must match Publisher in AppxManifest.xml / PublisherCN in AnyFSE.Version.props)
+  PUBLISHER_CN: DDCC7751-898D-4BC9-B80C-4AA73E5D5762
+
+# MSBuild runs from cmd, not pwsh: the signing targets call Windows PowerShell 5.1, which cannot load the
+# Cert: drive when it inherits the PowerShell 7 PSModulePath of a pwsh parent process.
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # Release builds sign every EXE/DLL (upstream signing targets). A throwaway certificate keeps this job
+      # independent from repository secrets, so it also works for pull requests.
+      - name: Create throwaway binary signing certificate
+        if: matrix.configuration == 'Release'
+        shell: powershell
+        run: |
+          New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=AnyFSE-CI" `
+            -CertStoreLocation Cert:\CurrentUser\My -NotAfter (Get-Date).AddDays(1) | Out-Null
+
+      - name: Build binaries
+        run: >-
+          msbuild AnyFSE.sln /m
+          /p:Configuration=${{ matrix.configuration }} /p:Platform=${{ env.PLATFORM }}
+          /p:WindowsTargetPlatformVersion=${{ env.WINDOWS_SDK_VERSION }}
+          "/p:BinarySigningCN=AnyFSE-CI"
+          "/t:AnyFSE;AnyFSE_Settings;AnyFSE_ACSEFilterHook;AnyFSE_ACSEFilterInjector"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyFSE-${{ matrix.configuration }}
+          path: |
+            build/${{ matrix.configuration }}/AnyFSE.exe
+            build/${{ matrix.configuration }}/AnyFSE.Settings.dll
+            build/${{ matrix.configuration }}/AnyFSE.ACSEFilterHook.dll
+            build/${{ matrix.configuration }}/AnyFSE.ACSEFilterInjector.exe
+
+  package:
+    runs-on: windows-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # One certificate signs both the binaries (BinarySigningCN) and the APPX (PublisherCN).
+      # Its public part becomes AnyFSE.Temp.cer, which the installer trusts temporarily during installation.
+      - name: Import signing certificate
+        shell: powershell
+        env:
+          SIGNING_CERTIFICATE: ${{ secrets.SIGNING_CERTIFICATE }}
+          SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+        run: |
+          $pfxPath = Join-Path $env:RUNNER_TEMP "AnyFSE-signing.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String($env:SIGNING_CERTIFICATE))
+          $password = ConvertTo-SecureString -String $env:SIGNING_CERTIFICATE_PASSWORD -Force -AsPlainText
+          $cert = Import-PfxCertificate -FilePath $pfxPath -CertStoreLocation Cert:\CurrentUser\My -Password $password
+          Remove-Item $pfxPath
+          Export-Certificate -Cert $cert -FilePath AnyFSE.Temp.cer | Out-Null
+
+      - name: Build offline installer
+        run: >-
+          msbuild AnyFSE.sln /m
+          /p:Configuration=Release /p:Platform=${{ env.PLATFORM }} /p:Offline=Offline
+          /p:WindowsTargetPlatformVersion=${{ env.WINDOWS_SDK_VERSION }}
+          /p:BinarySigningCN=${{ env.PUBLISHER_CN }}
+
+      - name: Upload package and installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyFSE-Installer
+          path: |
+            build/Release/AnyFSE.Installer.Offline.*.exe
+            build/Release/AnyFSE-*.identity.appx
+            build/Release/AnyFSE.*.cab
+            build/Release/AnyFSE.*.pdb.zip
+            AnyFSE.Temp.cer
