@@ -334,6 +334,11 @@ namespace AnyFSE::App
             return 0;
         }
 
+        if (bFirstLaunch && ExitFSE::ExitWhenDocked())
+        {
+            return 0;
+        }
+
         if (Launchers::IsLauncherActiveOrMinimized())
         {
             Launchers::FocusLauncher();

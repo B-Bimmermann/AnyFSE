@@ -40,6 +40,7 @@ Some other launchers potentially can be supported too with minor customizations
     - [Razer Cortex](https://www.razer.com/cortex)
 - Ability to use a custom executable or other installed native Gaming Home application.
 - Option to run the selected launcher as administrator.
+- Option to leave full screen experience on startup when the device is docked (external display connected).
 - Maximized performance during minimal runtime memory and perfomance footprint due to C++ sorce code.
 - Ability to navigate to download pages of supported launchers.
 - User defined video splash during launchers start.

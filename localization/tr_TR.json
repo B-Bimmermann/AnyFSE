@@ -80,6 +80,8 @@
   "settingsEnterFseOnStartup": "Başlangıçta tam ekran moduna gir",
   "settingsLeaveFseOnHomeExit": "Ev uygulamasından çıkıldığında tam ekran deneyiminden çık",
   "settingsLeaveFseOnHomeExitDescription": "Ev uygulaması kapatıldıktan sonra tam ekran deneyimi modundan çık.",
+  "settingsLeaveFseWhenDocked": "Yerleştirme istasyonuna bağlıyken tam ekran deneyiminden çık",
+  "settingsLeaveFseWhenDockedDescription": "Harici bir ekran bağlıysa başlangıçta masaüstüne geç",
   "settingsUseCustomSettings": "Özel ayarları kullan",
   "settingsUseCustomSettingsDescription": "Seçili ev uygulaması için izleme ve başlangıç ayarlarını değiştirin.",
   "settingsSplashScreenSettings": "Uygulama açılış ekranı ayarları",

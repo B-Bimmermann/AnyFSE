@@ -74,6 +74,7 @@ namespace AnyFSE::Configuration
     DWORD           Config::RestartDelay = 1000;
     std::list<StartupApp> Config::StartupApps;
     bool            Config::ExitFSEOnHomeExit = false;
+    bool            Config::SmartDockedMode = false;
     bool            Config::HotkeysEnable = false;
 
     int             Config::UpdateCheckInterval = -2;
@@ -153,6 +154,7 @@ namespace AnyFSE::Configuration
         SplashVideoPause        = config.value(jp("/Splash/Video/Pause"),    true);
         StartupApps             = config.value(jp("/StartupApps"),           std::list<StartupApp>());
         ExitFSEOnHomeExit       = config.value(jp("/Extra/ExitFSEOnHomeExit"), false);
+        SmartDockedMode         = config.value(jp("/Extra/SmartDockedMode"),   false);
         HotkeysEnable           = config.value(jp("/Hotkeys/Enable"),       false);
 
         UpdatePreRelease        = config.value(jp("/Update/PreRelease"),     false);
@@ -258,6 +260,7 @@ namespace AnyFSE::Configuration
         config["StartupApps"]                   = StartupApps;
 
         config["Extra"]["ExitFSEOnHomeExit"]    = ExitFSEOnHomeExit;
+        config["Extra"]["SmartDockedMode"]      = SmartDockedMode;
 
         config["Hotkeys"]["Enable"]             = HotkeysEnable;
 

@@ -7,6 +7,7 @@ namespace AnyFSE::App::Constants
     inline constexpr wchar_t AppUserModelId[] = L"ArtemShpynov.AnyFSE_by4wjhxmygwn4!App";
     inline constexpr wchar_t PackageAtomName[] = L"ArtemShpynov.AnyFSE_by4wjhxmygwn4";
     inline constexpr wchar_t WaitingExitMutex[] = L"ArtemShpynov.AnyFSE_WaitingExitFSE";
+    inline constexpr wchar_t DockedCheckAtomName[] = L"ArtemShpynov.AnyFSE_DockedCheck";
 
     // Product files
     inline constexpr wchar_t AnyFseSettingsDll[] = L"AnyFSE.Settings.dll";

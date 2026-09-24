@@ -80,6 +80,8 @@
   "settingsEnterFseOnStartup": "Enter full screen experience on startup",
   "settingsLeaveFseOnHomeExit": "Leave full screen experience on home app exit",
   "settingsLeaveFseOnHomeExitDescription": "Exit full screen experience mode after Home app was exited",
+  "settingsLeaveFseWhenDocked": "Leave full screen experience when docked",
+  "settingsLeaveFseWhenDockedDescription": "Switch to desktop on startup if an external display is connected",
   "settingsUseCustomSettings": "Use custom settings",
   "settingsUseCustomSettingsDescription": "Change monitoring and startups settings for selected home application",
   "settingsSplashScreenSettings": "Splash screen settings",

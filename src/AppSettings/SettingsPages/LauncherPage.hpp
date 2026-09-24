@@ -29,6 +29,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
             , m_enableHomeAppSelectionButton(m_theme)
             , m_fseOnStartupToggle(m_theme)
             , m_fseExitOnHomeExitToggle(m_theme)
+            , m_smartDockedToggle(m_theme)
             , m_asAdminToggle(m_theme)
             , m_customSettingsToggle(m_theme)
             , m_additionalArgumentsEdit(m_theme)
@@ -77,6 +78,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         Button m_enableHomeAppSelectionButton;
         Toggle m_fseOnStartupToggle;
         Toggle m_fseExitOnHomeExitToggle;
+        Toggle m_smartDockedToggle;
         Toggle m_asAdminToggle;
         Toggle m_customSettingsToggle;
         Button m_customResetButton;
@@ -94,6 +96,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         SettingsLine * m_pHomeAppSelectionLine = nullptr;
         SettingsLine * m_pFseOnStartupLine = nullptr;
         SettingsLine * m_pExitOnHomeExitLine = nullptr;
+        SettingsLine * m_pSmartDockedLine = nullptr;
         SettingsLine * m_pAsAdminLine = nullptr;
         SettingsLine * m_pCustomSettingsLine = nullptr;
         SettingsLine * m_pStartupSettingsLine = nullptr;

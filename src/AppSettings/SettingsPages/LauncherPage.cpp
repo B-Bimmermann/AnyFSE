@@ -63,6 +63,13 @@ namespace AnyFSE::App::AppSettings::Settings::Page
             Layout::LineHeight, Layout::LinePadding, 0);
         m_pExitOnHomeExitLine->SetIcon(L'\xEE47');
 
+        m_pSmartDockedLine = &m_dialog.AddSettingsLine(settingPageList, top,
+            Translate(L"settingsLeaveFseWhenDocked"),
+            Translate(L"settingsLeaveFseWhenDockedDescription"),
+            m_smartDockedToggle,
+            Layout::LineHeight, Layout::LinePadding, 0);
+        m_pSmartDockedLine->SetIcon(L'\xE7F4');
+
         m_pAsAdminLine = &m_dialog.AddSettingsLine(settingPageList, top,
             Translate(L"settingsStartLauncherAsAdministrator"),
             Translate(L"settingsStartLauncherAsAdministratorDescription"),
@@ -264,6 +271,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         Config::Launcher.Type = m_config.Type;
         Config::Launcher.StartCommand = m_config.StartCommand;
         Config::ExitFSEOnHomeExit = m_fseExitOnHomeExitToggle.GetCheck();
+        Config::SmartDockedMode = m_smartDockedToggle.GetCheck();
         Config::CustomSettings = m_customSettingsToggle.GetCheck();
         Config::CustomSettings = m_customSettingsToggle.GetCheck();
         Config::Launcher.StartArg = m_additionalArgumentsEdit.GetText();
@@ -331,6 +339,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         m_pBrowseLine->Show(available);
         m_pFseOnStartupLine->Show(available);
         m_pExitOnHomeExitLine->Show(available);
+        m_pSmartDockedLine->Show(available);
         m_pCustomSettingsLine->Show(available);
         m_pSplashSettingsLine->Show(available);
         m_pStartupSettingsLine->Show(available);
@@ -417,6 +426,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         }
         m_fseOnStartupToggle.SetCheck(Config::FseOnStartup);
         m_fseExitOnHomeExitToggle.SetCheck(Config::ExitFSEOnHomeExit);
+        m_smartDockedToggle.SetCheck(Config::SmartDockedMode);
 
         bool alwaysSettings = m_defaultConfig.Type==LauncherType::Custom;
         bool noSettings =
@@ -451,6 +461,7 @@ namespace AnyFSE::App::AppSettings::Settings::Page
         }
 
         m_pExitOnHomeExitLine->Enable(enabledAnyFSE);
+        m_pSmartDockedLine->Enable(enabledAnyFSE);
         m_pSplashSettingsLine->Enable(enabledAnyFSE);
         m_pStartupSettingsLine->Enable(enabledAnyFSE);
 
