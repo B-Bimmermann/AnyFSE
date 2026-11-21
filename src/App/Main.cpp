@@ -45,6 +45,7 @@
 #include "App/Constants.hpp"
 #include "App/GamingExperience.hpp"
 #include "App/ExitFSE.hpp"
+#include "App/DockedMode.hpp"
 #include "App/MainWindow.hpp"
 #include "App/Launchers.hpp"
 #include "App/JumpList.hpp"
@@ -86,7 +87,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         return exitCode;
     }
 
-    if (App::IsFirstLaunch() && ExitFSE::ExitWhenDocked())
+    if (App::IsFirstLaunch() && DockedMode::ExitWhenDocked())
     {
         return 0;
     }

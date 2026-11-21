@@ -39,6 +39,11 @@ namespace AnyFSE::App::Constants
     inline constexpr wchar_t UninstallerUpdateArguments[] = L"/s /u";
     inline constexpr wchar_t InjectorExe[] = L"AnyFSE.ACSEFilterInjector.exe";
 
+    // Smart Docked Mode
+    inline constexpr wchar_t GameBarExe[] = L"gamebar.exe";
+    // Device path prefixes of root / software enumerated display adapters, as used by virtual display drivers.
+    inline constexpr const wchar_t* VirtualAdapterPathPrefixes[] = { L"\\\\?\\ROOT#", L"\\\\?\\SWD#" };
+
     // ASUS / ACSE integration
     inline constexpr wchar_t InjectorServiceName[] = L"ACSEFilterInjector";
     inline constexpr wchar_t InjectorServiceArgument[] = L"--service";
